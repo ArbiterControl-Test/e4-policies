@@ -1,0 +1,9 @@
+# Must block: a passing `gitleaks` check run from a workflow in this repository does not stand in for the trusted
+# scan's result, which only the pinned trusted workflow can give.
+expect: DENY
+changed_paths: [README.md]
+actor_type: human
+github_evidence:
+  available: true
+  approvals: []
+  checks: [{ name: gitleaks, app_id: 15368, workflow: .github/workflows/secret-scan.yml, check_run_id: 21, status: completed, conclusion: success }]

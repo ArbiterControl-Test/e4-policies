@@ -1,0 +1,4 @@
+# Must block: a docs-only change with no trusted secret scan result. The scan must pass on every pull request.
+expect: DENY
+changed_paths: [README.md]
+actor_type: human

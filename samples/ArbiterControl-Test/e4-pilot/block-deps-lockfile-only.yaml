@@ -1,0 +1,9 @@
+# Must block (UC3): a lockfile-only change, with no trusted result and no approval.
+expect: DENY
+changed_paths: [package-lock.json]
+actor_type: ai_agent
+trusted_results: { gitleaks: success }   # UC4 scan passed; no UC3 dependency-check result
+github_evidence:
+  available: true
+  approvals: []
+  checks: []

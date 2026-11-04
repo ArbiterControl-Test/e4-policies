@@ -1,0 +1,6 @@
+# Must block: a CI workflow change with no platform team approval.
+expect: DENY
+changed_paths: [.github/workflows/deploy.yml]
+actor_type: ai_agent
+trusted_results: { gitleaks: success }   # UC4: the trusted secret scan passed (always required)
+github_evidence: { available: true, approvals: [], checks: [] }

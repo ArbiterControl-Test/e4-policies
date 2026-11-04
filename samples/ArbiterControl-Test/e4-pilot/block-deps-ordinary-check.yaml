@@ -1,0 +1,11 @@
+# Must block (UC3): a passing dependency-check run from a workflow in this repository does not stand in for
+# the trusted result, which only the pinned trusted workflow can give.
+expect: DENY
+changed_paths: [package.json, package-lock.json]
+actor_type: ai_agent
+trusted_results: { gitleaks: success }   # UC4 scan passed; no UC3 dependency-check result
+github_evidence:
+  available: true
+  approvals:
+    - { user_id: 101, login: platform-reviewer, review_id: 1, teams: [ArbiterControl-Test/e4-platform] }
+  checks: [{ name: dependency-check, app_id: 15368, workflow: .github/workflows/dependency-check.yml, check_run_id: 31, status: completed, conclusion: success }]

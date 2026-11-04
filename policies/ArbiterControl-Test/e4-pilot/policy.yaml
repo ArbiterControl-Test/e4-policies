@@ -1,0 +1,399 @@
+# Starter policy (ARB-293). Copy to policies/<your-org>/<your-repo>/policy.yaml in your policy repo, then replace
+# `acme` with your GitHub organization and the team names with your own teams (org/slug).
+version: "1.0"
+
+# AI provenance files are optional at first; turn this on once your agents write .ai/provenance.json.
+provenance:
+  required: false
+  required_fields: [session_id, agent, files_modified, generated_at]
+  artifact_path: ".ai/provenance.json"
+
+# Paths Arbiter governs. Anything else (docs, app code) is allowed without extra evidence.
+protected_paths:
+  # IAM (ARB-326): add every folder that defines or feeds IAM here, with risk_class "high"; the escalation below holds
+  # each change for ArbiterControl-Test/e4-security. The README's section on IAM lists what to include.
+  # For example:
+  #   - pattern: "modules/iam/**"
+  #     label: "IAM modules"
+  #     risk_class: "high"
+  #   - pattern: "policies/iam/**"
+  #     label: "IAM policy files"
+  #     risk_class: "high"
+  #   - pattern: "environments/*/iam.tfvars"
+  #     label: "IAM variables"
+  #     risk_class: "high"
+  - pattern: "infrastructure/iam/**"
+    label: "IAM roles and policies"
+    risk_class: "high"
+  - pattern: "infrastructure/**"
+    label: "Infrastructure (Terraform)"
+    risk_class: "standard"
+  # CI configuration (ARB-317): workflows, local actions, CODEOWNERS, Dependabot, and actions defined anywhere.
+  - pattern: ".github/**"
+    label: "GitHub configuration (workflows, actions, CODEOWNERS, Dependabot)"
+    risk_class: "standard"
+  - pattern: "**/action.yml"
+    label: "Actions defined in the repository"
+    risk_class: "standard"
+  - pattern: "**/action.yaml"
+    label: "Actions defined in the repository"
+    risk_class: "standard"
+  # Dependency files (UC3, ARB-318), at any depth. Each is also an evidence requirement below. Files and ecosystems
+  # not listed here are not protected: add patterns for yours (starter/README.md, "Dependency changes").
+  # npm, pnpm, yarn, bun
+  - pattern: "**/package.json"
+    label: "Dependencies (npm, pnpm, yarn, bun)"
+    risk_class: "standard"
+  - pattern: "**/package-lock.json"
+    label: "Dependencies (npm, pnpm, yarn, bun)"
+    risk_class: "standard"
+  - pattern: "**/pnpm-lock.yaml"
+    label: "Dependencies (npm, pnpm, yarn, bun)"
+    risk_class: "standard"
+  - pattern: "**/yarn.lock"
+    label: "Dependencies (npm, pnpm, yarn, bun)"
+    risk_class: "standard"
+  - pattern: "**/npm-shrinkwrap.json"
+    label: "Dependencies (npm, pnpm, yarn, bun)"
+    risk_class: "standard"
+  - pattern: "**/bun.lock*"
+    label: "Dependencies (npm, pnpm, yarn, bun)"
+    risk_class: "standard"
+  - pattern: "**/pnpm-workspace.yaml"
+    label: "Dependencies (npm, pnpm, yarn, bun)"
+    risk_class: "standard"
+  - pattern: "**/.npmrc"
+    label: "Dependencies (npm, pnpm, yarn, bun)"
+    risk_class: "standard"
+  - pattern: "**/.yarnrc*"
+    label: "Dependencies (npm, pnpm, yarn, bun)"
+    risk_class: "standard"
+  # Python
+  - pattern: "**/requirements.txt"
+    label: "Dependencies (Python)"
+    risk_class: "standard"
+  - pattern: "**/requirements*.txt"
+    label: "Dependencies (Python)"
+    risk_class: "standard"
+  - pattern: "**/requirements/**/*.txt"
+    label: "Dependencies (Python)"
+    risk_class: "standard"
+  - pattern: "**/requirements*.in"
+    label: "Dependencies (Python)"
+    risk_class: "standard"
+  - pattern: "**/constraints*.txt"
+    label: "Dependencies (Python)"
+    risk_class: "standard"
+  - pattern: "**/poetry.lock"
+    label: "Dependencies (Python)"
+    risk_class: "standard"
+  - pattern: "**/Pipfile.lock"
+    label: "Dependencies (Python)"
+    risk_class: "standard"
+  - pattern: "**/pyproject.toml"
+    label: "Dependencies (Python)"
+    risk_class: "standard"
+  - pattern: "**/Pipfile"
+    label: "Dependencies (Python)"
+    risk_class: "standard"
+  - pattern: "**/uv.lock"
+    label: "Dependencies (Python)"
+    risk_class: "standard"
+  - pattern: "**/setup.py"
+    label: "Dependencies (Python)"
+    risk_class: "standard"
+  - pattern: "**/setup.cfg"
+    label: "Dependencies (Python)"
+    risk_class: "standard"
+  # Go
+  - pattern: "**/go.sum"
+    label: "Dependencies (Go)"
+    risk_class: "standard"
+  - pattern: "**/go.mod"
+    label: "Dependencies (Go)"
+    risk_class: "standard"
+  - pattern: "**/go.work"
+    label: "Dependencies (Go)"
+    risk_class: "standard"
+  # Rust
+  - pattern: "**/Cargo.lock"
+    label: "Dependencies (Rust)"
+    risk_class: "standard"
+  - pattern: "**/Cargo.toml"
+    label: "Dependencies (Rust)"
+    risk_class: "standard"
+  - pattern: "**/.cargo/config.toml"
+    label: "Dependencies (Rust)"
+    risk_class: "standard"
+  # Java, Kotlin
+  - pattern: "**/pom.xml"
+    label: "Dependencies (Java, Kotlin)"
+    risk_class: "standard"
+  - pattern: "**/gradle.lockfile"
+    label: "Dependencies (Java, Kotlin)"
+    risk_class: "standard"
+  - pattern: "**/*.gradle"
+    label: "Dependencies (Java, Kotlin)"
+    risk_class: "standard"
+  - pattern: "**/*.gradle.kts"
+    label: "Dependencies (Java, Kotlin)"
+    risk_class: "standard"
+  - pattern: "**/gradle/*.versions.toml"
+    label: "Dependencies (Java, Kotlin)"
+    risk_class: "standard"
+  # Ruby
+  - pattern: "**/Gemfile.lock"
+    label: "Dependencies (Ruby)"
+    risk_class: "standard"
+  - pattern: "**/Gemfile"
+    label: "Dependencies (Ruby)"
+    risk_class: "standard"
+  - pattern: "**/*.gemspec"
+    label: "Dependencies (Ruby)"
+    risk_class: "standard"
+  # PHP
+  - pattern: "**/composer.lock"
+    label: "Dependencies (PHP)"
+    risk_class: "standard"
+  - pattern: "**/composer.json"
+    label: "Dependencies (PHP)"
+    risk_class: "standard"
+  # .NET
+  - pattern: "**/*.csproj"
+    label: "Dependencies (.NET)"
+    risk_class: "standard"
+  - pattern: "**/*.fsproj"
+    label: "Dependencies (.NET)"
+    risk_class: "standard"
+  - pattern: "**/*.vbproj"
+    label: "Dependencies (.NET)"
+    risk_class: "standard"
+  - pattern: "**/packages.lock.json"
+    label: "Dependencies (.NET)"
+    risk_class: "standard"
+  - pattern: "**/packages.config"
+    label: "Dependencies (.NET)"
+    risk_class: "standard"
+  - pattern: "**/Directory.Packages.props"
+    label: "Dependencies (.NET)"
+    risk_class: "standard"
+  - pattern: "**/Directory.Build.props"
+    label: "Dependencies (.NET)"
+    risk_class: "standard"
+  - pattern: "**/nuget.config"
+    label: "Dependencies (.NET)"
+    risk_class: "standard"
+  - pattern: "**/NuGet.Config"
+    label: "Dependencies (.NET)"
+    risk_class: "standard"
+  - pattern: "**/NuGet.config"
+    label: "Dependencies (.NET)"
+    risk_class: "standard"
+  - pattern: "**/Directory.Build.targets"
+    label: "Dependencies (.NET)"
+    risk_class: "standard"
+  # Add every file outside .github/ that your workflows or actions run or read: each local action's code and
+  # Dockerfile (for example dist/index.js beside a root action.yml), the targets of symlinks under .github/, and the
+  # folders your workflows run scripts from (for example scripts/ci/**). List each here, with the requirement below,
+  # and in check_definitions.paths. Arbiter cannot see which files a workflow runs; an unlisted file is not protected.
+
+# What a protected change needs before Arbiter authorizes it. Approvals and checks are read from GitHub.
+evidence_requirements:
+  - path_pattern: "infrastructure/**"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks:
+      - name: "terraform-plan"
+        app_id: 15368            # GitHub Actions
+        workflow: ".github/workflows/terraform.yml"   # the workflow that runs `terraform plan`
+  - path_pattern: ".github/**"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+  - path_pattern: "**/action.yml"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+  - path_pattern: "**/action.yaml"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+  # Dependency changes (UC3): a passing dependency-check from your trusted repository, which pull requests cannot
+  # change, and a platform approval. The trusted entry is written once (&uc3_check): replace acme/arbiter-trusted
+  # and the commit there with yours (starter/trusted-workflows/README.md); every rule below uses it (*uc3_check).
+  # npm, pnpm, yarn, bun
+  - path_pattern: "**/package.json"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks:
+      - &uc3_check
+        name: "dependency-check"
+        trusted_workflow: "acme/arbiter-trusted/.github/workflows/dependency-check.yml"
+        trusted_workflow_sha: "0000000000000000000000000000000000000000"   # SET-ME: your trusted repo's commit
+  - path_pattern: "**/package-lock.json"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/pnpm-lock.yaml"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/yarn.lock"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/npm-shrinkwrap.json"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/bun.lock*"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/pnpm-workspace.yaml"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/.npmrc"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/.yarnrc*"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  # Python
+  - path_pattern: "**/requirements.txt"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/requirements*.txt"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/requirements/**/*.txt"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/requirements*.in"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/constraints*.txt"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/poetry.lock"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/Pipfile.lock"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/pyproject.toml"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/Pipfile"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/uv.lock"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/setup.py"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/setup.cfg"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  # Go
+  - path_pattern: "**/go.sum"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/go.mod"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/go.work"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  # Rust
+  - path_pattern: "**/Cargo.lock"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/Cargo.toml"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/.cargo/config.toml"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  # Java, Kotlin
+  - path_pattern: "**/pom.xml"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/gradle.lockfile"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/*.gradle"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/*.gradle.kts"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/gradle/*.versions.toml"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  # Ruby
+  - path_pattern: "**/Gemfile.lock"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/Gemfile"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/*.gemspec"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  # PHP
+  - path_pattern: "**/composer.lock"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/composer.json"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  # .NET
+  - path_pattern: "**/*.csproj"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/*.fsproj"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/*.vbproj"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/packages.lock.json"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/packages.config"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/Directory.Packages.props"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/Directory.Build.props"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/nuget.config"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/NuGet.Config"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/NuGet.config"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+  - path_pattern: "**/Directory.Build.targets"
+    required_approvals: { team: "ArbiterControl-Test/e4-platform", min_approvals: 1 }
+    required_checks: [*uc3_check]
+
+# Checks that must pass on every pull request, whatever it changes (UC4). The secret scan runs in your separate,
+# protected trusted repository, which pull requests cannot change: only its result, from the pinned commit, counts.
+# Replace acme/arbiter-trusted and the commit with yours (starter/trusted-workflows/README.md). Without a trusted
+# repository, use the ordinary form in starter/README.md ("Secret scan without a trusted repository").
+always_required_checks:
+  - name: "gitleaks"
+    app_id: 15368                                # GitHub Actions
+    workflow: ".github/workflows/arbiter-secret-scan.yml"
+
+# Changes to how checks run (workflows and actions) can make a required check pass whatever it tests. While a pull
+# request changes them, its check results count only if this team also approves. The two gitleaks files are listed
+# so that adding or editing one is a reviewed change, even though the starter scans read neither.
+check_definitions:
+  paths: ["**/.gitleaks.toml", "**/.gitleaksignore"]
+  approvers: { team: "ArbiterControl-Test/e4-security", min_approvals: 1 }
+
+# High-risk changes (IAM) are held until the security team approves on GitHub.
+escalation_conditions:
+  - trigger: "iam_change_needs_security_review"
+    description: "IAM changes need a security team approval"
+    condition: { risk_class: "high", when: "human_approval_required" }
+    category: "policy_declared_human_approval_required"
+    cleared_by: { team: "ArbiterControl-Test/e4-security", min_approvals: 1 }
+
+failure_defaults:
+  protected_path_unavailable_input: DENY

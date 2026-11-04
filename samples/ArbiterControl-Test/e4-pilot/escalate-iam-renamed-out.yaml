@@ -1,0 +1,9 @@
+# Must escalate: renaming a file out of the IAM folder changes both names, and the old one is under the IAM folder.
+expect: ESCALATE
+changed_paths: [infrastructure/app/deploy-role.tf, infrastructure/iam/deploy-role.tf]
+actor_type: ai_agent
+trusted_results: { gitleaks: success }   # UC4: the trusted secret scan passed (always required)
+github_evidence:
+  available: true
+  approvals: [{ user_id: 101, login: platform-reviewer, review_id: 1, teams: [ArbiterControl-Test/e4-platform] }]
+  checks: [{ name: terraform-plan, app_id: 15368, workflow: .github/workflows/terraform.yml, check_run_id: 11, status: completed, conclusion: success }]

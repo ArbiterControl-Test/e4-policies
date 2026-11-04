@@ -1,0 +1,10 @@
+# Must block (UC3): a go.mod in a subfolder is covered; approved, but no trusted result.
+expect: DENY
+changed_paths: [services/api/go.mod]
+actor_type: ai_agent
+trusted_results: { gitleaks: success }   # UC4 scan passed; no UC3 dependency-check result
+github_evidence:
+  available: true
+  approvals:
+    - { user_id: 101, login: platform-reviewer, review_id: 1, teams: [ArbiterControl-Test/e4-platform] }
+  checks: []

@@ -1,0 +1,10 @@
+# Must block: an infrastructure change whose plan check passes but whose approval comes from a team other than
+# ArbiterControl-Test/e4-platform. The wrong team is the only thing missing: the same change approved by ArbiterControl-Test/e4-platform is allowed.
+expect: DENY
+changed_paths: [infrastructure/app.tf]
+actor_type: human
+trusted_results: { gitleaks: success }   # UC4: the trusted secret scan passed (always required)
+github_evidence:
+  available: true
+  approvals: [{ user_id: 303, login: payments-reviewer, review_id: 1, teams: [acme/payments] }]
+  checks: [{ name: terraform-plan, app_id: 15368, workflow: .github/workflows/terraform.yml, check_run_id: 11, status: completed, conclusion: success }]

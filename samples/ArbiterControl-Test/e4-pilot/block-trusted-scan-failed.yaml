@@ -1,0 +1,5 @@
+# Must block: a docs-only change whose trusted secret scan found a problem.
+expect: DENY
+changed_paths: [README.md]
+actor_type: human
+trusted_results: { gitleaks: failure }

@@ -1,0 +1,9 @@
+# Must block: an infrastructure change that is approved but has no passing terraform-plan check.
+expect: DENY
+changed_paths: [infrastructure/network/vpc.tf]
+actor_type: human
+trusted_results: { gitleaks: success }   # UC4: the trusted secret scan passed (always required)
+github_evidence:
+  available: true
+  approvals: [{ user_id: 101, login: platform-reviewer, review_id: 1, teams: [ArbiterControl-Test/e4-platform] }]
+  checks: []

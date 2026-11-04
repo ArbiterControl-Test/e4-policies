@@ -1,0 +1,9 @@
+# Must block (UC3): the same .NET change without the platform approval.
+expect: DENY
+changed_paths: [App/App.csproj]
+actor_type: ai_agent
+trusted_results: { gitleaks: success, dependency-check: success }   # UC4 scan passed; UC3 dependency-check success
+github_evidence:
+  available: true
+  approvals: []
+  checks: []

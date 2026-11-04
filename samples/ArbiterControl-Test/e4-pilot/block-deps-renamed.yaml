@@ -1,0 +1,11 @@
+# Must block (UC3): requirements.txt renamed to reqs/prod.txt. GitHub lists both names; the old name is
+# covered, so the rule applies. No trusted result.
+expect: DENY
+changed_paths: [requirements.txt, reqs/prod.txt]
+actor_type: ai_agent
+trusted_results: { gitleaks: success }   # UC4 scan passed; no UC3 dependency-check result
+github_evidence:
+  available: true
+  approvals:
+    - { user_id: 101, login: platform-reviewer, review_id: 1, teams: [ArbiterControl-Test/e4-platform] }
+  checks: []

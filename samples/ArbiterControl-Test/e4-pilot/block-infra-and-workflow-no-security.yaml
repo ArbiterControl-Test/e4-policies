@@ -1,0 +1,9 @@
+# Must block: the same change without a security approval; the plan check cannot count while its workflow changes.
+expect: DENY
+changed_paths: [infrastructure/network/vpc.tf, .github/workflows/terraform.yml]
+actor_type: human
+trusted_results: { gitleaks: success }   # UC4: the trusted secret scan passed (always required)
+github_evidence:
+  available: true
+  approvals: [{ user_id: 101, login: platform-reviewer, review_id: 1, teams: [ArbiterControl-Test/e4-platform] }]
+  checks: [{ name: terraform-plan, app_id: 15368, workflow: .github/workflows/terraform.yml, check_run_id: 11, status: completed, conclusion: success }]

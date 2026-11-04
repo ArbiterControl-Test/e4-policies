@@ -1,0 +1,6 @@
+# Must allow: a change outside every protected path needs no approval; like every pull request, it needs the trusted
+# secret scan to pass.
+expect: ALLOW
+changed_paths: [README.md, docs/runbook.md]
+actor_type: human
+trusted_results: { gitleaks: success }   # UC4: the trusted secret scan passed (always required)

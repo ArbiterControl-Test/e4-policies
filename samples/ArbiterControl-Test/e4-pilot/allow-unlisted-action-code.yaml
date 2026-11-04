@@ -1,0 +1,7 @@
+# Documents a limit (ARB-317): an action's code outside .github/ (here dist/index.js beside a root action.yml) is
+# not protected until you list it in protected_paths and check_definitions.paths. See the guide.
+expect: ALLOW
+changed_paths: [dist/index.js]
+actor_type: ai_agent
+trusted_results: { gitleaks: success }   # UC4: the trusted secret scan passed (always required)
+github_evidence: { available: true, approvals: [], checks: [] }

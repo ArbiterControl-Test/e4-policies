@@ -1,0 +1,10 @@
+# Must escalate: deleting a file under the IAM folder is an IAM change, held for the security team. A sample carries
+# paths, not file contents, so it reads like any change; the live suite proves a real deletion (PLAN-231, IP1).
+expect: ESCALATE
+changed_paths: [infrastructure/iam/old-role.tf]
+actor_type: ai_agent
+trusted_results: { gitleaks: success }   # UC4: the trusted secret scan passed (always required)
+github_evidence:
+  available: true
+  approvals: [{ user_id: 101, login: platform-reviewer, review_id: 1, teams: [ArbiterControl-Test/e4-platform] }]
+  checks: [{ name: terraform-plan, app_id: 15368, workflow: .github/workflows/terraform.yml, check_run_id: 11, status: completed, conclusion: success }]

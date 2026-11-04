@@ -1,0 +1,12 @@
+# Must allow: the same workflow change, approved by a platform team member and, because a workflow change changes
+# how checks run, by a security team member (without it the always-required scan does not count).
+expect: ALLOW
+changed_paths: [.github/workflows/deploy.yml]
+actor_type: ai_agent
+trusted_results: { gitleaks: success }   # UC4: the trusted secret scan passed (always required)
+github_evidence:
+  available: true
+  approvals:
+    - { user_id: 101, login: platform-reviewer, review_id: 1, teams: [ArbiterControl-Test/e4-platform] }
+    - { user_id: 202, login: security-reviewer, review_id: 2, teams: [ArbiterControl-Test/e4-security] }
+  checks: []
