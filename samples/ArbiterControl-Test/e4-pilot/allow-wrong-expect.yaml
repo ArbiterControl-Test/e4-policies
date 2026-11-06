@@ -1,0 +1,5 @@
+# P6: a wrong answer on purpose — a workflow change with no approval cannot be allowed.
+expect: ALLOW
+changed_paths: [.github/workflows/deploy.yml]
+actor_type: human
+github_evidence: { available: true, approvals: [], checks: [{ name: gitleaks, workflow: .github/workflows/arbiter-secret-scan.yml, app_id: 15368, status: completed, conclusion: success, check_run_id: 41 }] }
