@@ -1,0 +1,5 @@
+# Must allow: a change to notes only (E4, A8)
+expect: ALLOW
+changed_paths: [docs/notes.md]
+actor_type: human
+github_evidence: { available: true, approvals: [], checks: [{ name: gitleaks, workflow: .github/workflows/arbiter-secret-scan.yml, app_id: 15368, status: completed, conclusion: success, check_run_id: 41 }] }
