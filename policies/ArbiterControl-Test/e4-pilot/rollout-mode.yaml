@@ -1,3 +1,1 @@
-# Start in advisory: Arbiter reports what it would decide, and nothing is blocked. Switch to enforce by a
-# reviewed pull request once the results look right.
-rollout_mode: advisory
+rollout_mode: enforce
