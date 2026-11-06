@@ -3,4 +3,4 @@
 expect: ALLOW
 changed_paths: [README.md, docs/runbook.md]
 actor_type: human
-trusted_results: { gitleaks: success }   # UC4: the trusted secret scan passed (always required)
+github_evidence: { available: true, approvals: [], checks: [{ name: gitleaks, workflow: .github/workflows/arbiter-secret-scan.yml, app_id: 15368, status: completed, conclusion: success, check_run_id: 41 }] }

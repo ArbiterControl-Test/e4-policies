@@ -3,10 +3,9 @@
 expect: ALLOW
 changed_paths: [.github/workflows/deploy.yml]
 actor_type: ai_agent
-trusted_results: { gitleaks: success }   # UC4: the trusted secret scan passed (always required)
 github_evidence:
   available: true
   approvals:
     - { user_id: 101, login: platform-reviewer, review_id: 1, teams: [ArbiterControl-Test/e4-platform] }
     - { user_id: 202, login: security-reviewer, review_id: 2, teams: [ArbiterControl-Test/e4-security] }
-  checks: []
+  checks: [{ name: gitleaks, workflow: .github/workflows/arbiter-secret-scan.yml, app_id: 15368, status: completed, conclusion: success, check_run_id: 41 }]
